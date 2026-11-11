@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+  
+  body {
+    background-color: #080c14;
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(56, 189, 248, 0.3);
+    color: #ffffff;
+  }
+}
+
+/* Subtle glowing accent utilities */
+.glow-blue {
+  box-shadow: 0 0 40px -10px rgba(56, 189, 248, 0.25);
+}
+
+.glow-purple {
+  box-shadow: 0 0 40px -10px rgba(168, 85, 247, 0.25);
+}
+
+.glow-subtle {
+  box-shadow: 0 10px 30px -15px rgba(59, 130, 246, 0.2);
+}
