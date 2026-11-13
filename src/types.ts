@@ -30,6 +30,8 @@ export interface ProjectItem {
   liveDemoUrl?: string;
   badge: string;
   metrics?: { label: string; value: string }[];
+  techStack?: string[];
+  architectureNote?: string;
 }
 
 export interface ContactFormData {

@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { 
   ExternalLink, 
   Github, 
   Play, 
   Pause, 
-  Layers, 
-  CheckCircle2, 
-  Smartphone, 
   Monitor, 
-  Sparkles, 
-  SlidersHorizontal,
-  ArrowRight,
   TrendingUp,
-  Volume2,
   Workflow
 } from 'lucide-react';
-import { PROJECTS, PERSONAL_INFO } from '../data/portfolioData.ts';
+import { PROJECTS } from '../data/portfolioData.ts';
 import { ProjectCategory, ProjectItem } from '../types.ts';
+import { ProjectCard } from './ProjectCard.tsx';
 
 interface ProjectsProps {
   onOpenProjectModal?: (project: ProjectItem) => void;
@@ -26,17 +21,53 @@ interface ProjectsProps {
 export const Projects: React.FC<ProjectsProps> = ({ onContactClick }) => {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>('all');
   
-  // Interactive state for Project 2: AI Video & Reels player simulation
-  const [isPlayingReel, setIsPlayingReel] = useState(false);
+  // Interactive state for Project 2: AI Video & Reels player (plays silently without sound)
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlayingReel, setIsPlayingReel] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
   const [activeVideoScene, setActiveVideoScene] = useState(0);
   const [reelAspectRatio, setReelAspectRatio] = useState<'9:16' | '16:9'>('9:16');
 
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+    videoEl.defaultMuted = true;
+    videoEl.muted = true;
+    videoEl.volume = 0;
+  }, []);
+
+  const togglePlayReel = () => {
+    const videoEl = videoRef.current;
+    setIsPlayingReel((prev) => {
+      const next = !prev;
+      if (videoEl) {
+        videoEl.muted = true;
+        videoEl.volume = 0;
+        if (next) {
+          videoEl.play().catch(() => {});
+        } else {
+          videoEl.pause();
+        }
+      }
+      return next;
+    });
+  };
+
   // Interactive state for Project 3: CRM pipeline lead movement
   const [leads, setLeads] = useState([
-    { id: '1', name: 'Acme SaaS Corp', service: 'AI Website Redesign', stage: 'New Lead', value: '$1,200' },
-    { id: '2', name: 'Kinetics Studio', service: 'Viral Reels Campaign', stage: 'Contacted', value: '$850' },
-    { id: '3', name: 'Nexus Fitness', service: 'Custom CRM Pipeline', stage: 'Proposal Sent', value: '$1,500' },
+    { id: '1', name: 'Acme SaaS Corp', service: 'AI Website Redesign', stage: 'New Lead', amountInr: 102000 },
+    { id: '2', name: 'Kinetics Studio', service: 'Viral Reels Campaign', stage: 'Contacted', amountInr: 72250 },
+    { id: '3', name: 'Nexus Fitness', service: 'Custom CRM Pipeline', stage: 'Proposal Sent', amountInr: 127500 },
   ]);
+
+  const formatInr = (amount: number) =>
+    new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+
+  const totalPipelineInr = leads.reduce((sum, lead) => sum + lead.amountInr, 0);
 
   // Video scenes for Project 2 showcase
   const videoScenes = [
@@ -60,235 +91,205 @@ export const Projects: React.FC<ProjectsProps> = ({ onContactClick }) => {
   };
 
   return (
-    <section id="projects" className="py-24 relative border-t border-slate-800/60">
+    <section id="projects" className="py-24 relative border-t border-slate-200 dark:border-slate-800/60 scroll-mt-20 bg-[var(--bg-page)] transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="text-sm font-semibold uppercase tracking-wider text-blue-400 mb-2">
+          <div className="text-sm font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2">
             Selected Works
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
             Projects Showcase
           </h2>
-          <p className="mt-3 text-slate-400 text-base">
+          <p className="mt-3 text-slate-600 dark:text-slate-400 text-base">
             Real code, AI generative media workflows, and automated systems built for scale.
           </p>
         </div>
 
-        {/* Interactive Filter Tabs (Buttons with click handlers) */}
+        {/* Interactive Filter Tabs (Buttons with animated active background) */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-14">
-          <button
-            type="button"
-            onClick={() => setActiveCategory('all')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-              activeCategory === 'all'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-semibold'
-                : 'bg-slate-900/60 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
-            }`}
-          >
-            All Projects
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveCategory('web')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-              activeCategory === 'web'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 font-semibold'
-                : 'bg-slate-900/60 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
-            }`}
-          >
-            Web Dev
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveCategory('ai-media')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-              activeCategory === 'ai-media'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 font-semibold'
-                : 'bg-slate-900/60 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
-            }`}
-          >
-            AI Media
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveCategory('automation')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-              activeCategory === 'automation'
-                ? 'bg-cyan-600 text-white shadow-md shadow-cyan-600/30 font-semibold'
-                : 'bg-slate-900/60 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700'
-            }`}
-          >
-            Automation
-          </button>
+          {(
+            [
+              { id: 'all', label: 'All Projects', activeBg: 'bg-blue-600 shadow-blue-600/30' },
+              { id: 'web', label: 'Web Dev', activeBg: 'bg-blue-600 shadow-blue-600/30' },
+              { id: 'ai-media', label: 'AI Media', activeBg: 'bg-purple-600 shadow-purple-600/30' },
+              { id: 'automation', label: 'Automation', activeBg: 'bg-cyan-600 shadow-cyan-600/30' },
+            ] as const
+          ).map((tab) => {
+            const isActive = activeCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveCategory(tab.id)}
+                className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'text-white font-semibold'
+                    : 'bg-white dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm dark:shadow-none'
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="active-project-filter"
+                    transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                    className={`absolute inset-0 rounded-xl shadow-md ${tab.activeBg}`}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Project Cards List */}
-        <div className="space-y-12">
-          {filteredProjects.map((project) => {
-            const isWebProject = project.id === 'live-website-project';
-            const isVideoProject = project.id === 'ai-video-reels-campaign';
-            const isCrmProject = project.id === 'custom-crm-workflow';
+        <motion.div
+          key={activeCategory}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="space-y-12"
+        >
+            {filteredProjects.map((project, index) => {
+              const isWebProject = project.id === 'live-website-project';
+              const isVideoProject = project.id === 'ai-video-reels-campaign';
+              const isCrmProject = project.id === 'custom-crm-workflow';
 
-            return (
-              <div
-                key={project.id}
-                className="p-6 sm:p-8 rounded-3xl bg-slate-900/50 border border-slate-800/90 shadow-xl backdrop-blur-sm transition-all hover:border-slate-700/80"
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                  {/* Left Column: Project Details */}
-                  <div className="lg:col-span-6 space-y-4">
-                    {/* Tag + Category Text */}
-                    <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
-                      <span className="text-blue-400 font-semibold">{project.tag}</span>
-                      <span>·</span>
-                      <span>{project.badge}</span>
-                    </div>
+              const actions = (
+                <>
+                  {isWebProject && (
+                    <>
+                      <a
+                        href={project.liveDemoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all"
+                      >
+                        <span>Live Demo</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all"
+                      >
+                        <Github className="w-4 h-4" />
+                        <span>GitHub Code</span>
+                      </a>
+                    </>
+                  )}
 
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                      {project.title}
-                    </h3>
+                  {isVideoProject && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={togglePlayReel}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 transition-all"
+                      >
+                        {isPlayingReel ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        <span>{isPlayingReel ? 'Pause Showcase' : 'Play Showcase'}</span>
+                      </button>
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all"
+                      >
+                        <Github className="w-4 h-4" />
+                        <span>Prompt Repo</span>
+                      </a>
+                    </>
+                  )}
 
-                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-                      {project.description}
-                    </p>
+                  {isCrmProject && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={onContactClick}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-500 shadow-md shadow-cyan-600/30 transition-all"
+                      >
+                        <Workflow className="w-4 h-4" />
+                        <span>Deploy Custom CRM</span>
+                      </button>
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all"
+                      >
+                        <Github className="w-4 h-4" />
+                        <span>Pipeline Architecture</span>
+                      </a>
+                    </>
+                  )}
+                </>
+              );
 
-                    {/* Key Highlights */}
-                    <div className="space-y-2 pt-2">
-                      {project.highlights.map((highlight, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-                          <span>{highlight}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Metrics Strip */}
-                    {project.metrics && (
-                      <div className="grid grid-cols-3 gap-3 pt-3">
-                        {project.metrics.map((m, i) => (
-                          <div key={i} className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-left">
-                            <div className="text-[11px] text-slate-400">{m.label}</div>
-                            <div className="text-sm font-semibold text-white mt-0.5">{m.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-3 pt-4">
-                      {isWebProject && (
-                        <>
-                          <a
-                            href={project.liveDemoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-600/30 transition-all"
-                          >
-                            <span>Live Demo</span>
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-200 bg-slate-800 hover:bg-slate-750 border border-slate-700 transition-all"
-                          >
-                            <Github className="w-4 h-4" />
-                            <span>GitHub Code</span>
-                          </a>
-                        </>
-                      )}
-
-                      {isVideoProject && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setIsPlayingReel(!isPlayingReel)}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 transition-all"
-                          >
-                            {isPlayingReel ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                            <span>{isPlayingReel ? 'Pause Showcase' : 'Play Showcase'}</span>
-                          </button>
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-200 bg-slate-800 hover:bg-slate-750 border border-slate-700 transition-all"
-                          >
-                            <Github className="w-4 h-4" />
-                            <span>Prompt Repo</span>
-                          </a>
-                        </>
-                      )}
-
-                      {isCrmProject && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={onContactClick}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-500 shadow-md shadow-cyan-600/30 transition-all"
-                          >
-                            <Workflow className="w-4 h-4" />
-                            <span>Deploy Custom CRM</span>
-                          </button>
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-200 bg-slate-800 hover:bg-slate-750 border border-slate-700 transition-all"
-                          >
-                            <Github className="w-4 h-4" />
-                            <span>Pipeline Architecture</span>
-                          </a>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right Column: Visual Demonstration / Placeholder Card */}
-                  <div className="lg:col-span-6">
-                    {/* View for Project 1: Live Web Project interactive preview */}
-                    {isWebProject && (
-                      <div className="p-4 sm:p-6 rounded-2xl bg-[#0b101d] border border-blue-500/30 shadow-2xl relative overflow-hidden">
+              const preview = (
+                <>
+                  {/* View for Project 1: FlowDesk Live Website Sample preview */}
+                  {isWebProject && (
+                    <div className="p-4 sm:p-6 rounded-2xl bg-[#0b101d] border border-blue-500/30 shadow-2xl relative overflow-hidden">
                         <div className="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800 text-xs text-slate-400">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 shrink-0" />
                             <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 shrink-0" />
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 shrink-0" />
-                            <span className="ml-1.5 font-mono text-slate-400 text-[11px] sm:text-xs truncate">dhruvsingh.dev/preview</span>
+                            <span className="ml-1.5 font-mono text-slate-300 text-[11px] sm:text-xs truncate">
+                              flowdesk...asia-southeast1.run.app
+                            </span>
                           </div>
                           <span className="text-emerald-400 font-mono text-[10px] sm:text-[11px] font-semibold shrink-0">
-                            <span className="hidden sm:inline">SSL SECURE · </span>200 OK
+                            <span className="hidden sm:inline">LIVE SAMPLE · </span>200 OK
                           </span>
                         </div>
 
-                        {/* Miniature interactive website preview surface */}
+                        {/* Miniature FlowDesk SaaS website preview surface */}
                         <div className="rounded-xl bg-slate-950 p-4 border border-slate-800/80 space-y-3">
-                          <div className="h-6 w-32 rounded bg-blue-500/30"></div>
-                          <div className="h-4 w-3/4 rounded bg-slate-800"></div>
-                          <div className="h-3 w-1/2 rounded bg-slate-800/60"></div>
-                          
-                          <div className="grid grid-cols-3 gap-2 pt-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
+                                F
+                              </span>
+                              <span className="text-xs font-semibold text-white">FlowDesk</span>
+                            </div>
+                            <span className="px-2 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 text-[10px] font-mono text-blue-300">
+                              Team Workspace
+                            </span>
+                          </div>
+
+                          <div className="text-[11px] text-slate-400 leading-snug">
+                            Plan sprints, collaborate in real time, and ship faster.
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2 pt-1">
                             <div className="h-16 rounded-lg bg-slate-900 border border-slate-800 p-2 flex flex-col justify-between">
-                              <span className="w-4 h-4 rounded bg-blue-500/40" />
-                              <span className="h-2 w-12 rounded bg-slate-700" />
+                              <span className="text-[10px] font-mono text-blue-400">Backlog</span>
+                              <span className="text-[11px] font-semibold text-slate-200">6 Tasks</span>
                             </div>
                             <div className="h-16 rounded-lg bg-slate-900 border border-slate-800 p-2 flex flex-col justify-between">
-                              <span className="w-4 h-4 rounded bg-purple-500/40" />
-                              <span className="h-2 w-12 rounded bg-slate-700" />
+                              <span className="text-[10px] font-mono text-purple-400">In Review</span>
+                              <span className="text-[11px] font-semibold text-slate-200">4 Active</span>
                             </div>
                             <div className="h-16 rounded-lg bg-slate-900 border border-slate-800 p-2 flex flex-col justify-between">
-                              <span className="w-4 h-4 rounded bg-indigo-500/40" />
-                              <span className="h-2 w-12 rounded bg-slate-700" />
+                              <span className="text-[10px] font-mono text-emerald-400">Shipped</span>
+                              <span className="text-[11px] font-semibold text-slate-200">12 Done</span>
                             </div>
                           </div>
 
                           <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/60">
                             <span className="flex items-center gap-1 text-blue-400">
-                              <Monitor className="w-3.5 h-3.5" /> Desktop & Mobile Optimized
+                              <Monitor className="w-3.5 h-3.5" /> Live SaaS Sample Site
                             </span>
-                            <span className="font-mono text-emerald-400 font-medium">99.8% Perf Score</span>
+                            <a
+                              href={project.liveDemoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-mono text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+                            >
+                              <span>Open Site</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -321,44 +322,80 @@ export const Projects: React.FC<ProjectsProps> = ({ onContactClick }) => {
                           </div>
                         </div>
 
-                        {/* Video Mock Screen */}
-                        <div className={`mx-auto rounded-xl bg-gradient-to-br from-slate-950 via-purple-950/40 to-slate-900 border border-purple-800/40 p-4 flex flex-col justify-between transition-all ${
-                          reelAspectRatio === '9:16' ? 'h-64 max-w-[190px]' : 'h-48 w-full'
-                        }`}>
-                          <div className="flex items-center justify-between text-[11px] text-purple-300">
-                            <span className="font-mono">{videoScenes[activeVideoScene].duration}</span>
-                            <span className="flex items-center gap-1 font-mono text-[10px]"><Volume2 className="w-3 h-3" /> AI Voice</span>
+                        {/* Video Player Preview Box (9:16 / 16:9) */}
+                        <div
+                          className={`relative mx-auto rounded-xl bg-gradient-to-br from-slate-950 via-purple-950/40 to-slate-900 border border-purple-800/40 overflow-hidden transition-all ${
+                            reelAspectRatio === '9:16' ? 'w-full max-w-[190px] aspect-[9/16]' : 'h-48 w-full'
+                          }`}
+                        >
+                          <video
+                            ref={videoRef}
+                            src="/assets/aistudio/gemini_generated_video_25b540b9_b483825b.mp4"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            onLoadedData={() => {
+                              const vid = videoRef.current;
+                              if (vid) {
+                                vid.muted = true;
+                                vid.volume = 0;
+                                if (isPlayingReel && vid.paused) {
+                                  vid.play().catch(() => {});
+                                }
+                              }
+                              setVideoReady(true);
+                            }}
+                            onVolumeChange={(e) => {
+                              const vid = e.currentTarget;
+                              if (!vid.muted || vid.volume !== 0) {
+                                vid.muted = true;
+                                vid.volume = 0;
+                              }
+                            }}
+                            onError={() => setVideoReady(false)}
+                            onClick={togglePlayReel}
+                            className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+                            aria-label="AI Video and Reels Campaign silent preview player"
+                          />
+
+                          {/* Subtle top-left timing tag */}
+                          <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-slate-950/65 backdrop-blur-sm border border-purple-500/20 text-[10px] font-mono text-purple-200 pointer-events-none">
+                            {videoScenes[activeVideoScene].duration}
                           </div>
 
-                          <div className="text-center py-2">
-                            <button
-                              type="button"
-                              onClick={() => setIsPlayingReel(!isPlayingReel)}
-                              className="w-12 h-12 mx-auto rounded-full bg-purple-600/90 text-white flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-purple-600/50"
-                              aria-label={isPlayingReel ? 'Pause video' : 'Play video'}
-                            >
-                              {isPlayingReel ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
-                            </button>
-                            <div className="mt-2 text-xs font-semibold text-white">
-                              {videoScenes[activeVideoScene].title}
-                            </div>
-                            <div className="text-[10px] text-purple-300/80">
-                              {isPlayingReel ? 'Simulating Scene Playback...' : 'Click to preview reel'}
-                            </div>
-                          </div>
+                          {/* Fallback overlay if video fails to load */}
+                          {!videoReady && (
+                            <div className="relative z-10 h-full w-full p-4 flex flex-col justify-between pointer-events-none">
+                              <div className="h-5" />
+                              <div className="text-center py-2 pointer-events-auto">
+                                <button
+                                  type="button"
+                                  onClick={togglePlayReel}
+                                  className="w-11 h-11 mx-auto rounded-full bg-purple-600/90 text-white flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-purple-600/50"
+                                  aria-label={isPlayingReel ? 'Pause video' : 'Play video'}
+                                >
+                                  {isPlayingReel ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                                </button>
+                                <div className="mt-2 text-xs font-semibold text-white">
+                                  {videoScenes[activeVideoScene].title}
+                                </div>
+                              </div>
 
-                          {/* Sound wave visualizer */}
-                          <div className="flex items-center justify-center gap-1 h-4">
-                            {[12, 24, 16, 28, 20, 14, 26, 18, 22].map((height, idx) => (
-                              <span
-                                key={idx}
-                                className={`w-1 rounded-full bg-purple-400/80 transition-all ${
-                                  isPlayingReel ? 'animate-pulse' : 'opacity-40'
-                                }`}
-                                style={{ height: `${isPlayingReel ? height : 6}px` }}
-                              />
-                            ))}
-                          </div>
+                              {/* Sound wave visualizer */}
+                              <div className="flex items-center justify-center gap-1 h-4">
+                                {[12, 24, 16, 28, 20, 14, 26, 18, 22].map((height, idx) => (
+                                  <span
+                                    key={idx}
+                                    className={`w-1 rounded-full bg-purple-400/80 transition-all ${
+                                      isPlayingReel ? 'animate-pulse' : 'opacity-40'
+                                    }`}
+                                    style={{ height: `${isPlayingReel ? height : 6}px` }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Scene Selector */}
@@ -426,7 +463,7 @@ export const Projects: React.FC<ProjectsProps> = ({ onContactClick }) => {
                                 }`}>
                                   {lead.stage}
                                 </span>
-                                <div className="text-[10px] text-slate-400 mt-0.5">{lead.value}</div>
+                                <div className="text-[10px] text-slate-400 mt-0.5">{formatInr(lead.amountInr)}</div>
                               </div>
                             </div>
                           ))}
@@ -434,18 +471,26 @@ export const Projects: React.FC<ProjectsProps> = ({ onContactClick }) => {
 
                         <div className="mt-4 pt-3 border-t border-cyan-900/40 flex items-center justify-between text-[11px] text-slate-400">
                           <span className="text-cyan-400 flex items-center gap-1 font-mono">
-                            <TrendingUp className="w-3.5 h-3.5" /> Pipeline Value: $3,550
+                            <TrendingUp className="w-3.5 h-3.5" /> Pipeline Value: {formatInr(totalPipelineInr)}
                           </span>
                           <span className="text-slate-400">Instant Webhook Sync</span>
                         </div>
                       </div>
                     )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                </>
+              );
+
+              return (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  actions={actions}
+                  preview={preview}
+                />
+              );
+            })}
+        </motion.div>
       </div>
     </section>
   );

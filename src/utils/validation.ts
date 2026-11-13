@@ -1,4 +1,4 @@
-import { ContactFormData, ValidationResult } from '../types.ts';
+import type { ContactFormData, ValidationResult } from '../types.ts';
 
 /**
  * Validates the contact form inputs according to requirements:

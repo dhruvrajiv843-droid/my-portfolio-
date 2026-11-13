@@ -4,25 +4,28 @@ export const PERSONAL_INFO = {
   name: 'Dhruv Singh',
   shortName: 'Singh',
   brandName: 'Dhruv Singh.dev',
-  role: 'First-Year IT Engineering Student & Freelancer',
+  role: 'First-Year B.Tech IT Student (KJSCE) & Freelancer',
+  college: 'K. J. Somaiya College of Engineering (KJSCE)',
+  collegeShort: 'KJSCE, Mumbai',
+  degree: 'B.Tech in Information Technology (1st Year)',
   statusBadge: 'Open to Work — Freelance & Internships',
   headline: "Hi, I'm Dhruv Singh. Building Websites, AI Content & Smart Digital Solutions.",
-  subheadline: 'First-Year IT Engineering Student combining AI tools, UI/UX design, and web development to deliver fast, high-impact results.',
+  subheadline: 'First-Year IT Engineering Student at K. J. Somaiya College of Engineering (KJSCE) combining AI tools, UI/UX design, and web development to deliver fast, high-impact results.',
   email: 'dhruvrajiv843@gmail.com',
   githubUrl: 'https://github.com/dhruvrajiv843-droid',
   githubUsername: 'dhruvrajiv843-droid',
   linkedinUrl: 'https://www.linkedin.com/in/dhruv-singh-363724417/',
   location: 'Mumbai, India · Available Worldwide (Remote)',
-  bio: `I am a first-year Information Technology engineering student with an obsession for building practical, modern digital experiences. As a continuous learner, I bridge software engineering fundamentals with modern AI-accelerated workflows to turn ideas into polished products in record time.
+  bio: `I am a first-year Information Technology engineering student at K. J. Somaiya College of Engineering (KJSCE), Mumbai, and a continuous learner obsessed with building practical digital experiences. As a builder, I bridge software engineering fundamentals with modern AI-accelerated workflows to turn ideas into polished products in record time.
 
 My hands-on experience spans responsive web development, rapid interface prototyping in Figma, modern AI tools for video and audio production, and essential cloud deployment basics. Rather than getting bogged down in unnecessary complexity, I focus on clean design, fast load times, and tangible business impact.
 
-When I am not in engineering lectures or coding, you will find me pushing open-source repositories to GitHub, experimenting with generative media pipelines, and partnering with founders and teams for freelance projects and internship opportunities.`,
+When I am not in engineering lectures at KJSCE or coding, you will find me pushing open-source repositories to GitHub, experimenting with generative media pipelines, and partnering with founders and teams for freelance projects and internship opportunities.`,
   highlights: [
-    { label: 'Academic Focus', value: '1st Year IT Engineering' },
+    { label: 'Institution', value: 'KJSCE · K. J. Somaiya College of Engineering' },
+    { label: 'Academic Focus', value: '1st Year B.Tech IT Engineering' },
     { label: 'Core Advantage', value: 'AI-Powered Speed & Craft' },
     { label: 'Work Status', value: 'Freelance & Internships' },
-    { label: 'Code Base', value: 'Active on GitHub' },
   ],
   techStack: [
     { name: 'React & TypeScript', category: 'Frontend', level: 'Advanced Core' },
@@ -102,25 +105,27 @@ export const SERVICES: ServiceItem[] = [
 export const PROJECTS: ProjectItem[] = [
   {
     id: 'live-website-project',
-    title: 'Live Website Project',
-    tag: 'Web Dev / GitHub',
+    title: 'FlowDesk — Team Collaboration Website',
+    tag: 'Web Dev / Live Sample',
     category: 'web',
-    summary: 'High-performance interactive web application built with modern React, Tailwind CSS, and GitHub versioning.',
-    description: 'A fully responsive, production-ready web platform demonstrating clean semantic HTML, modular component architecture, dark-mode styling, and seamless interaction states. Features sub-second initial load, accessible keyboard navigation, and live deployment.',
-    badge: 'Featured Live Project',
+    summary: 'Modern project management and team collaboration SaaS web platform built to plan, collaborate, and ship faster.',
+    description: 'A modern, responsive project management and team collaboration SaaS website built to help teams plan sprints, organize tasks, and ship faster. Features polished SaaS UI blocks, modular React architecture, and live Cloud Run deployment.',
+    badge: 'Featured Website Sample',
     highlights: [
-      '100/100 Lighthouse Performance rating on mobile & desktop',
-      'Modular TypeScript architecture with zero runtime bloat',
-      'Continuous deployment pipeline hooked directly to GitHub',
-      'Accessible semantic structure with full WCAG AA contrast',
+      'Live deployed SaaS sample website hosted on Cloud Run',
+      'Clean task & team collaboration interface built for clarity and speed',
+      'Modular React + TypeScript architecture with responsive Tailwind UI',
+      'Accessible layout and smooth navigation across desktop & mobile',
     ],
-    githubUrl: 'https://github.com/dhruvrajiv843-droid/modern-web-platform',
-    liveDemoUrl: 'https://ais-dev-dht2qxzsh2k6dd263kaf2s-326094760700.asia-southeast1.run.app',
+    githubUrl: 'https://github.com/dhruvrajiv843-droid',
+    liveDemoUrl: 'https://flowdesk-project-management-team-collaboration-400366447878.asia-southeast1.run.app',
     metrics: [
-      { label: 'Load Time', value: '< 0.4s' },
+      { label: 'Category', value: 'SaaS Web App' },
       { label: 'Responsive', value: '100% Mobile' },
-      { label: 'Architecture', value: 'Clean TypeScript' },
+      { label: 'Status', value: 'Live Sample' },
     ],
+    techStack: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'Cloud Run'],
+    architectureNote: 'Responsive SaaS web platform showcasing structured workflow boards, team collaboration views, and clean production bundling.',
   },
   {
     id: 'ai-video-reels-campaign',
@@ -143,6 +148,8 @@ export const PROJECTS: ProjectItem[] = [
       { label: 'AI Voice Sync', value: 'Pixel-Accurate' },
       { label: 'Production Time', value: '24h Delivery' },
     ],
+    techStack: ['Runway Gen-3', 'Kling AI', 'ElevenLabs Voice', 'CapCut Pro', 'Figma Motion'],
+    architectureNote: 'Multi-pass seed-locked prompt pipeline paired with frame-accurate audio ducking and retention-tested 1.4s visual hook cuts.',
   },
   {
     id: 'custom-crm-workflow',
@@ -165,5 +172,7 @@ export const PROJECTS: ProjectItem[] = [
       { label: 'Lead Response', value: '< 60 seconds' },
       { label: 'Pipeline Stages', value: '5-Stage Kanban' },
     ],
+    techStack: ['Make / Zapier', 'Webhooks', 'Notion / HubSpot', 'Node.js', 'WhatsApp API'],
+    architectureNote: 'Event-driven webhook router with lead-scoring rules, deduplication checks, and automated follow-up triggers under 60s.',
   },
 ];
